@@ -1,0 +1,8 @@
+CREATE VIEW view_hrsworkpersched AS select tt.sched_id,tt.date,
+sec_to_time(SUM(CASE 
+    WHEN tt.time_in >= s.time_from THEN time_to_sec(tt.time_out) - time_to_sec(tt.time_in) ELSE 00
+END) + SUM(CASE 
+    WHEN tt.time_in < s.time_from AND tt.time_out > s.time_from THEN time_to_sec(tt.time_out) - time_to_sec(s.time_from) ELSE 00
+END)
+) AS hrswork
+from tbl_timelogs_temp tt, tbl_schedule s WHERE tt.sched_id=s.sched_id group by tt.sched_id,tt.date
